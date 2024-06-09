@@ -1,28 +1,28 @@
+import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Random;
+
 
 class RandomQueueIterator<Item> implements Iterator<Item> {
 
-    ListNode<Item>currentNode;
+    RandomizedQueue<Item> queue;
 
-    public RandomQueueIterator(ListNode<Item> root){
-        this.currentNode = root;
+    public RandomQueueIterator(RandomizedQueue<Item> queue){
+        this.queue = queue;
     }
 
 
     @Override
     public boolean hasNext() {
-        return this.currentNode.getNextNode()!=null;
+        return !this.queue.isEmpty();
     }
 
     @Override
     public Item next() {
         if(!this.hasNext()) throw new NoSuchElementException();
 
-        Item value = this.currentNode.getValue();
-        currentNode = currentNode.getNextNode();
-        return value;
+        return this.queue.dequeue();
     }
 
     @Override
@@ -35,13 +35,13 @@ class RandomQueueIterator<Item> implements Iterator<Item> {
 public class RandomizedQueue<Item> implements Iterable<Item> {
 
     private ListNode<Item> root;
-    private Random random;
+    private ListNode<Item> lastItem;
     private int size;
     // construct an empty randomized queue
     public RandomizedQueue(){
         root = null;
+        lastItem = null;
         size = 0;
-        random = new Random();
     }
 
     // is the randomized queue empty?
@@ -60,50 +60,55 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
         if(this.isEmpty()){
             this.root = new ListNode<>(item,null);
+            this.lastItem = root;
         }
         else{
-            ListNode<Item> currentNode = root;
-            while(currentNode.getNextNode()!=null){
-                currentNode = currentNode.getNextNode();
-            }
-            currentNode.setNextNode(new ListNode<Item>(item,null));
+            lastItem.setNextNode(new ListNode<Item>(item,null));
+            lastItem = lastItem.getNextNode();
         }
         this.size++;
     }
 
     // remove and return a random item
     public Item dequeue(){
-        int index = 0;
-        if(this.size!=1){
-            index = random.nextInt(this.size - 1);
-        }
-        int currentIndex = 0;
         if(this.isEmpty()) throw new NoSuchElementException();
 
-        if(index==0){
-            Item value = this.root.getValue();
-            this.root = this.root.getNextNode();
-            this.size=this.size-1;
-            return value;
-        }
 
-        ListNode<Item>currentNode = this.root;
-        while(currentIndex!=index-1){
-            currentIndex++;
-            currentNode = currentNode.getNextNode();
+        int index = 0;
+        if(this.size!=1){
+            index = StdRandom.uniform(0, this.size);
         }
-        Item value = currentNode.getNextNode().getValue();
-        currentNode.setNextNode(currentNode.getNextNode().getNextNode());
-        this.size=this.size-1;
-        System.out.println(this.size);
+        else{
+            this.lastItem = null;
+        }
+        int currentIndex = 0;
+        Item value = null;
+        if(index==0){
+            value = this.root.getValue();
+            this.root = this.root.getNextNode();
+        }
+        else{
+            ListNode<Item>currentNode = this.root;
+            while(currentIndex!=index-1){
+                currentIndex++;
+                currentNode = currentNode.getNextNode();
+            }
+            if(index==this.size-1){
+                this.lastItem = currentNode;
+            }
+            value = currentNode.getNextNode().getValue();
+            currentNode.setNextNode(currentNode.getNextNode().getNextNode());
+        }
+        this.size = this.size - 1;
         return value;
     }
 
     // return a random item (but do not remove it)
     public Item sample(){
-        int index = random.nextInt(this.size - 1);
-        int currentIndex = 0;
         if(this.isEmpty()) throw new NoSuchElementException();
+
+        int index = StdRandom.uniform(0, this.size);
+        int currentIndex = 0;
 
         if(index==0){
             Item value = this.root.getValue();
@@ -121,24 +126,21 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     // return an independent iterator over items in random order
     public Iterator<Item> iterator(){
-        return new RandomQueueIterator<>(this.root);
+        return new RandomQueueIterator<>(this);
     }
 
     // unit testing (required)
     public static void main(String[] args){
-        RandomizedQueue<Integer>  deq = new RandomizedQueue<>();
-        deq.isEmpty();
-        deq.size();
-        deq.enqueue(123);
-        deq.enqueue(12333);
-        deq.enqueue(1232);
-        System.out.println(deq.dequeue());
-        System.out.println(deq.sample());
-        System.out.println(deq.sample());
-        System.out.println(deq.dequeue());
-        System.out.println(deq.dequeue());
-        System.out.println(deq.isEmpty());
-        System.out.println(deq.iterator());
+        RandomizedQueue<Integer>  rq = new RandomizedQueue<>();
+        rq.enqueue(418);
+        rq.iterator();
+        rq.enqueue(254);
+        rq.enqueue(81);
+        rq.enqueue(262);
+        Iterator<Integer> a = rq.iterator();
+        while(a.hasNext()){
+            System.out.println(a.next());
+        }
     }
 
 }

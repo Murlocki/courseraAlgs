@@ -1,40 +1,7 @@
+import edu.princeton.cs.algs4.StdOut;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
-class ListNode<Item>{
-    private Item value;
-    private ListNode<Item> nextNode;
-    public ListNode(Item value,ListNode<Item> nextNode){
-        this.value = value;
-        this.nextNode = nextNode;
-    }
-    public ListNode(Item value){
-        this.value = value;
-        this.nextNode = null;
-    }
-
-    public Item getValue() {
-        return value;
-    }
-
-    public ListNode<Item> getNextNode() {
-        return nextNode;
-    }
-
-    public void setNextNode(ListNode<Item> nextNode) {
-        this.nextNode = nextNode;
-    }
-
-    public void setValue(Item value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return this.value.toString();
-    }
-}
-
 class DequeIterator<Item> implements Iterator<Item>{
 
     ListNode<Item>currentNode;
@@ -46,7 +13,7 @@ class DequeIterator<Item> implements Iterator<Item>{
 
     @Override
     public boolean hasNext() {
-        return this.currentNode.getNextNode()!=null;
+        return this.currentNode!=null;
     }
 
     @Override
@@ -158,8 +125,8 @@ public class Deque<Item> implements Iterable<Item> {
         deq.addFirst(123);
         deq.addLast(12333);
         deq.addLast(1232);
-        System.out.println(deq.removeFirst());
-        System.out.println(deq.removeLast());
-        System.out.println(deq.iterator());
+        StdOut.println(deq.removeFirst());
+        StdOut.println(deq.removeLast());
+        StdOut.println(deq.iterator());
     }
 }
